@@ -150,5 +150,5 @@ yaml/
 # 日志文件
 *.log
 
-# Nix 编译输出
-result/
+# 临时文件
+tmp/

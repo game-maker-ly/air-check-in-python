@@ -7,6 +7,8 @@ on:
 
 jobs:
   checkin:
+    name: Checkin BBSMYS
+    environment: BBSMYS
     runs-on: ubuntu-latest
 
     steps:
@@ -18,9 +20,29 @@ jobs:
         with:
           python-version: '3.12'
 
+      # 缓存python依赖，用来job之间共享依赖
+      - name: Cache pip
+        id: cache-pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: 📦 安装依赖
         run: |
           pip install -r requirements.txt
+
+      # 缓存临时文件，除非临时文件hash变化
+      - name: Cache tmp
+        id: cache-tmp
+        uses: actions/cache@v4
+        with:
+          path: ./tmp
+          key: ${{ runner.os }}-tmp-${{ hashFiles('**/cache.db') }}
+          restore-keys: |
+            ${{ runner.os }}-tmp-
 
       - name: ✅ 运行签到脚本
         env:

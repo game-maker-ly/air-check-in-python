@@ -4,6 +4,7 @@ import yaml
 from copy import deepcopy
 
 from loghelper import log
+from ..tools.cache_tool import cache
 
 # 这个字段现在还没找好塞什么地方好，就先塞config这里了
 serverless = False
@@ -125,11 +126,6 @@ def config_v13_update(data: dict):
     log.info("config 已升级到：14")
     return new_config
 
-# 加密信息
-secret_info = {
-    'stuid':'',
-    'mid':'',
-}
 
 # 读取配置文件，这里可以重写cookie以及token等载入方式
 def load_config(p_path=None):
@@ -148,12 +144,15 @@ def load_config(p_path=None):
         if data['version'] == 13:
             data = config_v13_update(data)
         save_config(p_config=data)
+    # 先尝试读取缓存，如果缓存未命中，则从环境变量中读取
+    cookie = cache.get_value("cookie")
+    stoken = cache.get_value("stoken")
     # 从env载入cookie和stoken
-    data["account"]["cookie"] = os.getenv('COOKIE', '')
-    data["account"]["stoken"] = os.getenv('STOKEN', '')
-    # 从全局变量载入stuid和mid
-    data["account"]["stuid"] = secret_info["stuid"]
-    data["account"]["mid"] = secret_info["mid"]
+    data["account"]["cookie"] = cookie if cookie else os.getenv('COOKIE', '')
+    data["account"]["stoken"] = stoken if stoken else os.getenv('STOKEN', '')
+    # 从缓存中载入stuid和mid
+    data["account"]["stuid"] = cache.get_value("stuid")
+    data["account"]["mid"] = cache.get_value("mid")
 
     # 去除cookie最末尾的空格
     data["account"]["cookie"] = str(data["account"]["cookie"]).rstrip(' ')
@@ -174,14 +173,16 @@ def save_config(p_path=None, p_config=None):
 
     # 在这里缓存加密信息的保存方式，并清空加密信息
     # 复制一份config，然后清空加密信息，并写入配置文件
-    secret_info["stuid"] = config["account"]["stuid"]
-    secret_info["mid"] = config["account"]["mid"]
+    cache.set_key_value("cookie", config["account"]["cookie"])
+    cache.set_key_value("stoken", config["account"]["stoken"])
+    cache.set_key_value("stuid", config["account"]["stuid"])
+    cache.set_key_value("mid", config["account"]["mid"])
     # 深拷贝后，清空加密信息
     p_config = deepcopy(config)
-    p_config["account"]["cookie"] = ''
-    p_config["account"]["stoken"] = ''
-    p_config["account"]["stuid"] = ''
-    p_config["account"]["mid"] = ''
+    p_config["account"]["cookie"] = None
+    p_config["account"]["stoken"] = None
+    p_config["account"]["stuid"] = None
+    p_config["account"]["mid"] = None
 
     with open(p_path, "w+") as f:
         try:
