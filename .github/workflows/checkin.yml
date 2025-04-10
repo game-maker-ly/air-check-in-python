@@ -19,13 +19,30 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
-     
+      
+      # 用pip命令获取缓存目录
+      - name: Get pip cache dir
+        id: pip-cache
+        shell: bash
+        run: |
+          echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+      # 使用上一步获取到的缓存目录进行缓存
+      - name: pip cache
+        id: do-pip-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: 📦 安装依赖
+        # 如果缓存命中则放弃安装依赖 
+        if: steps.do-pip-cache.outputs.cache-hit != 'true'
+        # 修改python依赖默认安装路径，方便打包缓存
         run: |
-          pip install -r requirements.txt
-
+          pip install -r requirements.txt --target ${{ steps.pip-cache.outputs.dir }}
+      
       # 缓存临时文件，除非临时文件hash变化
       - name: Cache tmp
         id: cache-tmp

@@ -152,3 +152,7 @@ yaml/
 
 # 临时文件
 tmp/
+
+开发日志.txt
+
+test.py

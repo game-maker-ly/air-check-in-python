@@ -132,7 +132,8 @@ class GameCheckin:
 
             if account[1] in config.config["games"]["cn"][self.game_mid]["black_list"]:
                 continue
-            log.info(f"正在为{self.player_name}「{account[0]}」进行签到...")
+            # 隐藏昵称
+            log.info(f"正在为{self.player_name}「{account[0][0]}**」进行签到...")
             time.sleep(random.randint(2, 8))
             is_data = self.is_sign(region=account[2], uid=account[1])
             if is_data.get("first_bind", False):

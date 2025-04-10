@@ -166,7 +166,8 @@ class Mihoyobbs:
         header = self.headers.copy()
         for forum in self.bbs_list:
             challenge = None
-            for retry_count in range(2):
+            # 仅签到1次
+            for retry_count in range(1):
                 post_data = json.dumps({"gids": forum["id"]})
                 post_data.replace(' ', '')
                 header["DS"] = tools.get_ds2("", post_data)
