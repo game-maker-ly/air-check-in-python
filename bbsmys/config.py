@@ -147,14 +147,12 @@ def load_config(p_path=None):
     # 先尝试读取缓存，如果缓存未命中，则从环境变量中读取
     cookie = cache.get_value("cookie")
     stoken = cache.get_value("stoken")
-    mid = cache.get_value("mid")
     # 从env载入cookie和stoken
     data["account"]["cookie"] = cookie if cookie else os.getenv('COOKIE', '')
     data["account"]["stoken"] = stoken if stoken else os.getenv('STOKEN', '')
-    data["account"]["mid"] = mid if mid else os.getenv('MID', '')
     # 从缓存中载入stuid和mid
     data["account"]["stuid"] = cache.get_value("stuid")
-    
+    data["account"]["mid"] = cache.get_value("mid")
 
     # 去除cookie最末尾的空格
     data["account"]["cookie"] = str(data["account"]["cookie"]).rstrip(' ')
