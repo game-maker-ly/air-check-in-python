@@ -31,6 +31,7 @@ jobs:
             ${{ runner.os }}-pip-
 
       - name: 📦 安装依赖
+        if: steps.cache-pip.outputs.cache-hit != 'true' #如果命中缓存则不安装依赖
         run: |
           pip install -r requirements.txt
 
