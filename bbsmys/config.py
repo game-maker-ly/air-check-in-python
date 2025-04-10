@@ -4,7 +4,7 @@ import yaml
 from copy import deepcopy
 
 from loghelper import log
-from tools.cache_tool import cache
+from cache_utils import cache
 
 # 这个字段现在还没找好塞什么地方好，就先塞config这里了
 serverless = False
