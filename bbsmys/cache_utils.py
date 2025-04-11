@@ -14,15 +14,15 @@ class CacheUtils:
 
     def get_value(self, cache_key: str):
         value = self.cache.get(cache_key, None)
-        if value is not None:
-            print(f"Cache hit for key: {cache_key}")
-        else:
-            print(f"Cache miss for key: {cache_key}")
+        # if value is not None:
+        #     print(f"Cache hit for key: {cache_key}")
+        # else:
+        #     print(f"Cache miss for key: {cache_key}")
         return value
 
     def set_key_value(self, cache_key: str, value):
         self.cache.set(cache_key, value)
-        print(f"Set cache key: {cache_key} with value: {value}")
+        # print(f"Set cache key: {cache_key} with value: {value}")
 
     def clear_cache(self):
         self.cache.clear()
