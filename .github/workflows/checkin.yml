@@ -44,6 +44,12 @@ jobs:
       #   shell: bash
       #   run: |
       #     pip show PyYAML
+
+      # python获取cache特定值的hash值，并写入$GITHUB_OUTPUT提供给下一步
+      - name: Get cache hash
+        id: get-cache-hash
+        run: |
+          python ./bbsmys/check_cache_hash.py >> $GITHUB_OUTPUT
       
       # 缓存临时文件，除非临时文件hash变化
       - name: Cache tmp
@@ -51,7 +57,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./tmp
-          key: ${{ runner.os }}-tmp-${{ hashFiles('**/tmp/cache.db') }}
+          key: ${{ runner.os }}-tmp-${{ steps.get-cache-hash.outputs.cookie_hash }}
           restore-keys: |
             ${{ runner.os }}-tmp-
 

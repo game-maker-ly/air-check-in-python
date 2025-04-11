@@ -1,4 +1,5 @@
 from diskcache import Cache
+from diskcache import JSONDisk
 
 # 实例化缓存对象，指定缓存目录
 # 基于sqlite数据库，本质上就是封装了数据库的操作
