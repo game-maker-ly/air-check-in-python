@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./tmp
-          key: ${{ runner.os }}-tmp-${{ hashFiles('**/cache.db') }}
+          key: ${{ runner.os }}-tmp-${{ hashFiles('**/tmp/cache.db') }}
           restore-keys: |
             ${{ runner.os }}-tmp-
 
@@ -60,10 +60,7 @@ jobs:
           COOKIE: ${{ secrets.COOKIE }}
           STOKEN: ${{ secrets.STOKEN }}
           MID: ${{ secrets.MID }}
-        # run: python ./bbsmys/main.py
-        run: |
-          cd ./tmp
-          ls
+        run: python ./bbsmys/config.py
 
   # workflow保活
   keepalive:
