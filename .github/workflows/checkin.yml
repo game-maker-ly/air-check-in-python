@@ -2,7 +2,7 @@ name: Checkin(python)
 
 on:
   schedule:
-    - cron: '0 20 * * *'  # 每天 UTC 时间 20:00 执行（北京时间 04:00）
+    - cron: '0 02 * * *'  # 每天 UTC 时间 02:00 执行（北京时间 10:00）
   workflow_dispatch:  # 允许手动触发
 
 jobs:
@@ -20,29 +20,30 @@ jobs:
         with:
           python-version: '3.12'
       
-      # 使用上一步获取到的缓存目录进行缓存
+      # 使用环境变量拼接python依赖目录
+      # 这种缓存方式会随着python解释器的更新而失效，要缓存的话最好固定版本
       - name: pip cache
-        id: do-pip-cache
+        id: pip-cache
         uses: actions/cache@v4
         with:
-          path: /opt/hostedtoolcache/Python/3.12.9/x64/lib
+          path: ${{ env.LD_LIBRARY_PATH }}/python3.12/site-packages
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: 📦 安装依赖
         # 如果缓存命中则放弃安装依赖 
-        if: steps.do-pip-cache.outputs.cache-hit != 'true'
+        if: steps.pip-cache.outputs.cache-hit != 'true'
         # 修改python依赖默认安装路径，方便打包缓存
         run: |
           pip install -r requirements.txt
 
-       # 调试命令获取pip包安装位置
-      - name: Get pip cache dir
-        id: pip-debug
-        shell: bash
-        run: |
-          pip show PyYAML
+      # 调试命令获取pip包安装位置
+      # - name: Get pip cache dir
+      #   id: pip-debug
+      #   shell: bash
+      #   run: |
+      #     pip show PyYAML
       
       # 缓存临时文件，除非临时文件hash变化
       - name: Cache tmp

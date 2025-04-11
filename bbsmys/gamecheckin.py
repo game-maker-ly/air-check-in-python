@@ -133,15 +133,16 @@ class GameCheckin:
             if account[1] in config.config["games"]["cn"][self.game_mid]["black_list"]:
                 continue
             # 隐藏昵称
-            log.info(f"正在为{self.player_name}「{account[0][0]}**」进行签到...")
+            nickname = account[0][0]+'**'
+            log.info(f"正在为{self.player_name}「{nickname}**」进行签到...")
             time.sleep(random.randint(2, 8))
             is_data = self.is_sign(region=account[2], uid=account[1])
             if is_data.get("first_bind", False):
-                log.warning(f"{self.player_name}「{account[0]}」是第一次绑定米游社，请先手动签到一次")
+                log.warning(f"{self.player_name}「{nickname}」是第一次绑定米游社，请先手动签到一次")
                 continue
             sign_days = is_data["total_sign_day"] - 1
             if is_data["is_sign"]:
-                log.info(f"{self.player_name}「{account[0]}」今天已经签到过了~\r\n今天获得的奖"
+                log.info(f"{self.player_name}「{nickname}」今天已经签到过了~\r\n今天获得的奖"
                          f"励是{tools.get_item(self.checkin_rewards[sign_days])}")
                 sign_days += 1
             else:
@@ -151,24 +152,24 @@ class GameCheckin:
                     data = req.json()
                     if data["retcode"] == 0 and data["data"]["success"] == 0:
                         log.info(
-                            f"{self.player_name}「{account[0]}」签到成功~\r\n今天获得的奖励是"
+                            f"{self.player_name}「{nickname}」签到成功~\r\n今天获得的奖励是"
                             f"{tools.get_item(self.checkin_rewards[0 if sign_days == 0 else sign_days + 1])}")
                         sign_days += 2
                     elif data["retcode"] == -5003:
                         log.info(
-                            f"{self.player_name}{account[0]}今天已经签到过了~\r\n今天获得的奖励是"
+                            f"{self.player_name}{nickname}今天已经签到过了~\r\n今天获得的奖励是"
                             f"{tools.get_item(self.checkin_rewards[sign_days])}")
                     else:
                         s = "账号签到失败！"
                         if data["data"] != "" and data.get("data").get("success", -1):
                             s += "原因：验证码\njson 信息：" + req.text
                         log.warning(s)
-                        return_data += f"\n{account[0]}，触发验证码，本次签到失败"
+                        return_data += f"\n{nickname}，触发验证码，本次签到失败"
                         continue
                 else:
-                    return_data += f"\n{account[0]}，本次签到失败"
+                    return_data += f"\n{nickname}，本次签到失败"
                     continue
-            return_data += f"\n{account[0]}已连续签到{sign_days}天\n" \
+            return_data += f"\n{nickname}已连续签到{sign_days}天\n" \
                            f"今天获得的奖励是{tools.get_item(self.checkin_rewards[sign_days - 1])}"
         return return_data
 
