@@ -60,7 +60,10 @@ jobs:
           COOKIE: ${{ secrets.COOKIE }}
           STOKEN: ${{ secrets.STOKEN }}
           MID: ${{ secrets.MID }}
-        run: python ./bbsmys/main.py
+        # run: python ./bbsmys/main.py
+        run: |
+          cd ./tmp
+          ls
 
   # workflow保活
   keepalive:
